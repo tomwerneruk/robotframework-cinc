@@ -1,0 +1,191 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CINCLibrary &#8212; cinc Robot Framework Library 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for CINCLibrary</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Top-level package for cinc Robot Framework Library.&quot;&quot;&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Tom Werner&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;tom@fluffycloudsandlines.cc&#39;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">robot.api.deco</span> <span class="kn">import</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">not_keyword</span><span class="p">,</span> <span class="n">library</span>
+<span class="kn">import</span> <span class="nn">robot.api.exceptions</span>
+<span class="kn">from</span> <span class="nn">robot.running.model</span> <span class="kn">import</span> <span class="n">TestSuite</span>
+<span class="kn">from</span> <span class="nn">robot.model.body</span> <span class="kn">import</span> <span class="n">BodyItem</span>
+
+
+<div class="viewcode-block" id="CINCLibrary"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary">[docs]</a><span class="nd">@library</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;TEST SUITE&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">CINCLibrary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Intiliase CINC Auditor Library</span>
+
+<span class="sd">        Init our library to be a robot listener, using the v2 API. This allows hooking into the execution lifecycle of a Test Suite to dynamically add cinc controls into the suite as test cases</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_LIBRARY_LISTENER</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_LISTENER_API_VERSION</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_suite</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CINCLibrary.start_suite"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.start_suite">[docs]</a>    <span class="k">def</span> <span class="nf">start_suite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start Suite Hook</span>
+
+<span class="sd">        Listener API Hook, invoked when the suite starts. Save the suite reference so that we can append tests to it.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_suite</span> <span class="o">=</span> <span class="n">suite</span></div>
+    
+<div class="viewcode-block" id="CINCLibrary.validate_profile"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.validate_profile">[docs]</a>    <span class="nd">@keyword</span><span class="p">(</span><span class="s2">&quot;Validate cinc Profile&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">validate_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">auditor_executable</span><span class="o">=</span><span class="s1">&#39;cinc-auditor&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate CINC Profile</span>
+
+<span class="sd">        Run the auditor tool to parse the provided profile to allow us to fail quick. Parse the number of controls for logging purposes.</span>
+
+<span class="sd">        :param str cinc-auditor: Optional over-ride of the executable name, incase the upstream tool is being used instead.</span>
+<span class="sd">        :param str profile: Path to the profile to be exeucted.</span>
+<span class="sd">        :raise: AssertionError if the profile is invalid</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Run cinc-auditor json which parses the profile and provides</span>
+        <span class="c1"># a list of controls to then create dynamic test cases for</span>
+        <span class="n">cinc_validate_execution</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">auditor_executable</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">profile</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cinc_validate_execution</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cinc_validation_result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cinc_validate_execution</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{0}</span><span class="s2"> controls in </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cinc_validation_result</span><span class="p">[</span><span class="s2">&quot;controls&quot;</span><span class="p">]),</span> <span class="n">profile</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Non zero return from cinc validate ... [</span><span class="si">{0}</span><span class="s2">]. </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">cinc_validate_execution</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> 
+                    <span class="n">cinc_validate_execution</span><span class="o">.</span><span class="n">stdout</span>
+                <span class="p">))</span></div>
+
+<div class="viewcode-block" id="CINCLibrary.exec_profile"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.exec_profile">[docs]</a>    <span class="nd">@keyword</span><span class="p">(</span><span class="s2">&quot;Execute cinc Profile&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">exec_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">auditor_executable</span><span class="o">=</span><span class="s1">&#39;cinc-auditor&#39;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+        <span class="n">cinc_execution</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">auditor_executable</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="s2">&quot;--reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cinc_execution</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">101</span><span class="p">):</span>
+            <span class="n">cinc_execution_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cinc_execution</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cinc_execution_json</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="n">cinc_execution_json</span><span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;controls&quot;</span><span class="p">]:</span>
+                <span class="n">tc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_suite</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;cinc Control - [ </span><span class="si">{0}</span><span class="s2"> ]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">control</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]))</span>
+                <span class="n">tc</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">create_keyword</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Process cinc Control Result&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">control</span><span class="p">])</span>    
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">cinc_execution</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">cinc_execution</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CINCLibrary.process_cinc_control_result"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.process_cinc_control_result">[docs]</a>    <span class="nd">@keyword</span><span class="p">(</span><span class="s2">&quot;Process cinc Control Result&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">process_cinc_control_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_json</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">control_json</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">control_json</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;passed&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Failed&quot;</span><span class="p">)</span></div></div>
+
+<span class="nb">globals</span><span class="p">()[</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">CINCLibrary</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">cinc Robot Framework Library</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">cinc Robot Framework Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">CINCLibrary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Tom Werner.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
