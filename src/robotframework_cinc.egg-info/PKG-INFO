@@ -1,0 +1,77 @@
+Metadata-Version: 2.1
+Name: robotframework-cinc
+Version: 0.1.4
+Summary: Robot Framework Library for integrating cinc auditor tests.
+Home-page: https://github.com/tomwerneruk/robotframework-cinc
+Author: Tom Werner
+Author-email: tom@fluffycloudsandlines.cc
+License: MIT license
+Keywords: robotframework-cinc
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Requires-Python: >=3.6
+License-File: LICENSE
+License-File: AUTHORS.rst
+
+============================
+cinc Robot Framework Library
+============================
+
+
+.. image:: https://img.shields.io/pypi/v/robotframework_cinc.svg
+        :target: https://pypi.python.org/pypi/robotframework_cinc
+
+.. image:: https://img.shields.io/travis/tomwerneruk/robotframework_cinc.svg
+        :target: https://travis-ci.com/tomwerneruk/robotframework_cinc
+
+.. image:: https://readthedocs.org/projects/robotframework-cinc/badge/?version=latest
+        :target: https://robotframework-cinc.readthedocs.io/en/latest/?version=latest
+        :alt: Documentation Status
+
+
+.. image:: https://pyup.io/repos/github/tomwerneruk/src/CINCLibrary/shield.svg
+     :target: https://pyup.io/repos/github/tomwerneruk/src/CINCLibrary/
+     :alt: Updates
+
+
+
+Robot Framework Library for integrating cinc auditor tests.
+
+
+* Free software: MIT license
+* Documentation: https://robotframework-cinc.readthedocs.io.
+
+
+Features
+--------
+
+* TODO
+
+Credits
+-------
+
+This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+
+=======
+History
+=======
+
+0.1.4 (2023-01-05)
+------------------
+
+* Packaging fixes.
+
+0.1.0 (2022-11-29)
+------------------
+
+* First release on PyPI.
