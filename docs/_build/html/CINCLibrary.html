@@ -72,7 +72,8 @@
 <dt id="CINCLibrary.CINCLibrary.start_suite">
 <code class="descname">start_suite</code><span class="sig-paren">(</span><em>suite</em>, <em>result</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/CINCLibrary.html#CINCLibrary.start_suite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CINCLibrary.CINCLibrary.start_suite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start Suite Hook</p>
-<p>Listener API Hook, invoked when the suite starts. Save the suite reference so that we can append tests to it.</p>
+<p>Listener API Hook, invoked when the suite starts. 
+Save the suite reference so that we can append tests to the handle.</p>
 </dd></dl>
 
 <dl class="method">
@@ -85,7 +86,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cinc-auditor</strong> (<em>str</em>) – Optional over-ride of the executable name, incase the upstream tool is being used instead.</li>
+<li><strong>cinc-auditor</strong> (<em>str</em>) – Optional over-ride of the executable name, incase the upstream tool (or other whitelabel) is being used instead.</li>
 <li><strong>profile</strong> (<em>str</em>) – Path to the profile to be exeucted.</li>
 </ul>
 </td>

@@ -41,8 +41,7 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">robot.api.deco</span> <span class="kn">import</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">not_keyword</span><span class="p">,</span> <span class="n">library</span>
-<span class="kn">import</span> <span class="nn">robot.api.exceptions</span>
+<span class="kn">from</span> <span class="nn">robot.api.deco</span> <span class="kn">import</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">library</span>
 <span class="kn">from</span> <span class="nn">robot.running.model</span> <span class="kn">import</span> <span class="n">TestSuite</span>
 <span class="kn">from</span> <span class="nn">robot.model.body</span> <span class="kn">import</span> <span class="n">BodyItem</span>
 
@@ -51,9 +50,11 @@
 <span class="k">class</span> <span class="nc">CINCLibrary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Intiliase CINC Auditor Library</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Intiliase CINC Auditor Library</span>
 
-<span class="sd">        Init our library to be a robot listener, using the v2 API. This allows hooking into the execution lifecycle of a Test Suite to dynamically add cinc controls into the suite as test cases</span>
+<span class="sd">        Init our library to be a robot listener, using the v2 API.</span>
+<span class="sd">        This allows hooking into the execution lifecycle of a Test Suite to </span>
+<span class="sd">        dynamically add cinc controls into the suite as test cases.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_LIBRARY_LISTENER</span> <span class="o">=</span> <span class="bp">self</span>
@@ -61,25 +62,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_suite</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CINCLibrary.start_suite"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.start_suite">[docs]</a>    <span class="k">def</span> <span class="nf">start_suite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start Suite Hook</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start Suite Hook</span>
 
-<span class="sd">        Listener API Hook, invoked when the suite starts. Save the suite reference so that we can append tests to it.</span>
+<span class="sd">        Listener API Hook, invoked when the suite starts. </span>
+<span class="sd">        Save the suite reference so that we can append tests to the handle.</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_suite</span> <span class="o">=</span> <span class="n">suite</span></div>
     
 <div class="viewcode-block" id="CINCLibrary.validate_profile"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.validate_profile">[docs]</a>    <span class="nd">@keyword</span><span class="p">(</span><span class="s2">&quot;Validate cinc Profile&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">validate_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">auditor_executable</span><span class="o">=</span><span class="s1">&#39;cinc-auditor&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate CINC Profile</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate CINC Profile</span>
 
 <span class="sd">        Run the auditor tool to parse the provided profile to allow us to fail quick. Parse the number of controls for logging purposes.</span>
 
-<span class="sd">        :param str cinc-auditor: Optional over-ride of the executable name, incase the upstream tool is being used instead.</span>
+<span class="sd">        :param str cinc-auditor: Optional over-ride of the executable name, incase the upstream tool (or other whitelabel) is being used instead.</span>
 <span class="sd">        :param str profile: Path to the profile to be exeucted.</span>
 <span class="sd">        :raise: AssertionError if the profile is invalid</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Run cinc-auditor json which parses the profile and provides</span>
+        <span class="c1"># Run `cinc-auditor json`` which parses the profile and provides</span>
         <span class="c1"># a list of controls to then create dynamic test cases for</span>
         <span class="n">cinc_validate_execution</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">auditor_executable</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">profile</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cinc_validate_execution</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -97,7 +99,7 @@
         <span class="n">cinc_execution</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">auditor_executable</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="s2">&quot;--reporter&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cinc_execution</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">101</span><span class="p">):</span>
             <span class="n">cinc_execution_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cinc_execution</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-            <span class="nb">print</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cinc_execution_json</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cinc_execution_json</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="n">cinc_execution_json</span><span class="p">[</span><span class="s2">&quot;profiles&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;controls&quot;</span><span class="p">]:</span>
                 <span class="n">tc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_suite</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;cinc Control - [ </span><span class="si">{0}</span><span class="s2"> ]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">control</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]))</span>
                 <span class="n">tc</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">create_keyword</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Process cinc Control Result&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">control</span><span class="p">])</span>    
@@ -107,7 +109,7 @@
 
 <div class="viewcode-block" id="CINCLibrary.process_cinc_control_result"><a class="viewcode-back" href="../CINCLibrary.html#CINCLibrary.CINCLibrary.process_cinc_control_result">[docs]</a>    <span class="nd">@keyword</span><span class="p">(</span><span class="s2">&quot;Process cinc Control Result&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">process_cinc_control_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">control_json</span><span class="p">):</span>
-        <span class="nb">print</span> <span class="p">(</span><span class="n">control_json</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">control_json</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">control_json</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;passed&#39;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Failed&quot;</span><span class="p">)</span></div></div>
